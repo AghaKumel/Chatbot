@@ -15,7 +15,6 @@ class ChatDataset(Dataset):
         self.x_data=torch.Tensor(X_train)
         self.y_data=y_train
  
-    #dataset[idx]
     def __getitem__(self,index):
         return self.x_data[index],self.y_data[index]
         
@@ -24,10 +23,7 @@ class ChatDataset(Dataset):
     
 
 if __name__ == '__main__':
-    # Add the following line if using multiprocessing
-    multiprocessing.freeze_support()
-    # Your main code goes here
- 
+    multiprocessing.freeze_support() 
 
     with open('intents.json', 'r') as f:
         intents=json.load(f)
@@ -57,14 +53,11 @@ if __name__ == '__main__':
         X_train.append(bag)
 
         label=tags.index(tag)
-        y_train.append(label)  #crossentropyloss
+        y_train.append(label) 
 
     X_train=np.array(X_train)
     y_train=torch.from_numpy(np.array(y_train)).long()
 
-    
-        
-    #hyperparameters
     batch_size=64
     hidden_size=128 
     output_size=len(tags)
@@ -72,14 +65,12 @@ if __name__ == '__main__':
     learning_rate =0.001
     num_epochs=50
  
-
     dataset=ChatDataset()
     train_loader=DataLoader(dataset=dataset,batch_size=batch_size,shuffle=True,num_workers=2)
 
     device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model=NeuralNet(input_size,hidden_size,output_size).to(device)
 
-    #loss and optimizer
     criterion=nn.CrossEntropyLoss()
     optimizer=torch.optim.Adam(model.parameters(),lr=learning_rate)
 
@@ -88,11 +79,9 @@ if __name__ == '__main__':
             words=words.to(device)
             labels=labels.to(device)
  
-            #forward
             outputs=model(words)
             loss=criterion(outputs,labels)
 
-            #backward and optimizer step
             optimizer.zero_grad()
             loss.backward() 
             optimizer.step()
